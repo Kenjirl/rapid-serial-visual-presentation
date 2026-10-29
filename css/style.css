@@ -1,0 +1,16 @@
+@import url("font-style.css");
+
+/* Soft grey light behind the page so the glass footer has something to blur */
+body {
+    background-color: #fffafa;
+    background-image:
+        radial-gradient(40rem 28rem at 12% 105%, rgba(43, 45, 49, 0.1), transparent 70%),
+        radial-gradient(34rem 24rem at 92% 100%, rgba(138, 138, 142, 0.18), transparent 70%);
+    background-attachment: fixed;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #18181b;
+    outline-offset: 2px;
+}
