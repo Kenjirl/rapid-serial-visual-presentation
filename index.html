@@ -9,10 +9,23 @@
         <link rel="icon" type="image/png" sizes="32x32" href="public/icon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="public/icon/favicon-16x16.png" />
         <link rel="icon" href="public/icon/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="public/icon/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="public/icon/apple-touch-icon.png" />
+        <link rel="manifest" href="public/icon/site.webmanifest" />
+
+        <!-- Tema: dijalankan sebelum CSS agar halaman tidak berkedip putih saat reload -->
+        <script>
+            (function () {
+                try {
+                    var t = localStorage.getItem("rsvp_theme") || "system";
+                    if (t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches))
+                        document.documentElement.classList.add("dark");
+                } catch (e) {}
+            })();
+        </script>
 
         <link rel="stylesheet" href="css/tailwind.css" />
         <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/dark.css" />
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
@@ -29,7 +42,7 @@
             <!-- RSVP stage: one column, 80% of screen width -->
             <section
                 id="rsvpContainer"
-                class="font-default w-[80vw] h-[50vh] flex items-center justify-center overflow-hidden">
+                class="relative font-default w-[80vw] h-[50vh] flex items-center justify-center overflow-hidden">
                 <p
                     id="rsvpWord"
                     aria-live="off"
@@ -72,59 +85,41 @@
             </div>
 
             <!-- Text input -->
-            <textarea
-                id="textInput"
-                class="w-full max-w-2xl h-40 p-4 text-sm text-cl-18181B bg-white border border-cl-D9D5D5 rounded-2xl resize-none placeholder:text-cl-8A8A8E focus:outline-none focus:ring-2 focus:ring-cl-2B2D31/30"
-                placeholder="Paste or type the text you want to read..."></textarea>
+            <section class="w-full max-w-2xl flex flex-col items-center gap-3">
+                <div id="modeToggle" class="inline-flex p-1 rounded-full bg-cl-EDEAEA text-sm">
+                    <button data-mode="plain" aria-pressed="true" class="px-4 py-1.5 rounded-full transition-colors">Plain text</button>
+                    <button data-mode="novel" aria-pressed="false" class="px-4 py-1.5 rounded-full transition-colors">Novel (dialogue &amp; narration)</button>
+                </div>
+                <p id="novelHint" class="hidden max-w-md mx-auto text-center text-xs text-cl-8A8A8E">
+                    Text inside quotation marks (" ") is dialogue and can be colored. Everything else is narration and stays black.
+                </p>
+                <textarea
+                    id="textInput"
+                    class="w-full h-40 p-4 text-sm text-cl-18181B bg-white border border-cl-D9D5D5 rounded-2xl resize-none placeholder:text-cl-8A8A8E focus:outline-none focus:ring-2 focus:ring-cl-2B2D31/30"
+                    placeholder="Paste or type the text you want to read..."></textarea>
+                <div id="dialoguePanel" class="hidden w-full">
+                    <div id="dialogueScroll" class="max-h-56 overflow-y-auto rounded-xl border border-cl-D9D5D5 bg-white">
+                        <table class="w-full table-fixed text-xs text-cl-18181B">
+                            <colgroup><col /><col class="w-20" /></colgroup>
+                            <thead class="sticky top-0 bg-cl-EDEAEA text-cl-2B2D31">
+                                <tr><th colspan="2" class="px-3 py-2 text-left font-semibold">Dialogues: pick a color for each one</th></tr>
+                            </thead>
+                            <tbody id="dialogueList" class="divide-y divide-cl-EDEAEA"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <!-- Glass footer -->
+        <!-- Glass footer (normal flow, not fixed) -->
         <footer class="w-full max-w-6xl px-4 pb-4">
-            <div
-                class="grid grid-cols-3 items-center gap-4 px-5 py-3 rounded-2xl border border-white/70 bg-white/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-
-                <!-- Left: Website icon -->
-                <div class="flex items-center justify-start">
-                    <a href="/" aria-label="Fast Read home">
-                        <img
-                            src="public/icon/favicon-32x32.png"
-                            alt="Fast Read logo"
-                            class="w-8 h-8 object-contain"
-                        />
-                    </a>
-                </div>
-
-                <!-- Center: Website name -->
-                <div class="flex items-center justify-center text-center">
-                    <span class="text-sm font-medium text-cl-18181B whitespace-nowrap">
-                        Rapid Serial Visual Presentation
-                    </span>
-                </div>
-
-                <!-- Right: Social links -->
-                <nav class="flex items-center justify-end gap-4 text-lg text-cl-2B2D31">
-                    <a
-                        href="https://kenjirl.github.io"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Kenji's Lore to Web Dev">
-                        <img
-                            src="public/icon/kenjirl-favicon-32x32.png"
-                            alt="Kenji's Lore to Web Dev logo"
-                            class="w-8 h-8 object-contain rounded-full"
-                        />
-                    </a>
-
-                    <a
-                        href="https://github.com/Kenjirl"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="GitHub Kenjirl"
-                        class="hover:text-cl-8A8A8E transition-colors">
-                        <i class="fa-brands fa-github"></i>
-                    </a>
+            <div class="grid grid-cols-[1fr_1fr] md:grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-3 rounded-2xl border border-white/70 bg-white/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+                <img src="public/icon/android-chrome-192x192.png" alt="RSVP logo" class="justify-self-start h-8 w-8 rounded-lg" />
+                <span class="hidden md:block text-center text-xs sm:text-sm font-medium text-cl-18181B">Rapid Serial Visual Presentation</span>
+                <nav class="justify-self-end flex items-center gap-4 text-lg text-cl-2B2D31">
+                    <a href="#" aria-label="Profile" class="hover:text-cl-8A8A8E transition-colors"><i class="fa-solid fa-user"></i></a>
+                    <a href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub" class="hover:text-cl-8A8A8E transition-colors"><i class="fa-brands fa-github"></i></a>
                 </nav>
-
             </div>
         </footer>
 

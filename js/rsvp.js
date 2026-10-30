@@ -1,4 +1,7 @@
 // js/rsvp.js
+import { parseNovel, themed } from "./novel-parser.js";
+import { getMode } from "./input-mode.js";
+
 const MAX_CHARS = 14; // kata lebih panjang dari ini dipecah jadi beberapa bagian
 
 let words = [];
@@ -19,16 +22,29 @@ function splitLong(word) {
     }).filter((p) => p !== "-");
 }
 
+const TRANSITION_PAUSE = 0.6; // jeda ekstra (x delay dasar) saat pindah narasi <-> dialog
+
+// -> [{ text, color, pause }]; narasi: color null
 function tokenize(text) {
-    return text.trim().split(/\s+/).filter(Boolean).flatMap(splitLong);
+    const segments = getMode() === "novel" ? parseNovel(text).segments : [{ text }];
+    return segments.flatMap((s) => {
+        const toks = s.text.trim().split(/\s+/).filter(Boolean).flatMap(splitLong);
+        return toks.map((t, i) => ({
+            text: t,
+            color: s.color || null,
+            pause: s.pauseAfter && i === toks.length - 1 ? TRANSITION_PAUSE : 0,
+        }));
+    });
 }
 
 // Kata panjang & tanda baca tampil sedikit lebih lama
-function delayFor(word) {
-    let mult = 1;
-    if (/[.!?]["')]*$/.test(word)) mult += 1;
-    else if (/[,;:]["')]*$/.test(word)) mult += 0.5;
-    if (word.length > 8) mult += 0.3;
+function delayFor(token) {
+    const word = token.text;
+    let extra = 0;
+    if (/[.!?]["')]*$/.test(word)) extra = 1;
+    else if (/[,;:]["')]*$/.test(word)) extra = 0.5;
+    extra = Math.max(extra, token.pause || 0); // transisi petik tidak menumpuk dengan tanda baca
+    const mult = 1 + extra + (word.length > 8 ? 0.3 : 0);
     return (60000 / getWPM()) * mult;
 }
 
@@ -58,7 +74,8 @@ function updateUI() {
 }
 
 function show(i) {
-    $("#rsvpWord").text(words[i]).removeClass("text-cl-8A8A8E").addClass("text-cl-18181B");
+    const w = words[i];
+    $("#rsvpWord").text(w.text).css("color", themed(w.color)).removeClass("text-cl-8A8A8E").addClass("text-cl-18181B");
     fit();
     $("#progressBar").css("width", `${((i + 1) / words.length) * 100}%`);
     $("#wordCounter").text(`${i + 1} / ${words.length}`);
@@ -104,7 +121,7 @@ function stop() {
     timer = null;
     state = "idle";
     index = 0;
-    $("#rsvpWord").text("Ready").removeClass("text-cl-18181B").addClass("text-cl-8A8A8E");
+    $("#rsvpWord").text("Ready").css("color", "").removeClass("text-cl-18181B").addClass("text-cl-8A8A8E");
     fit();
     $("#progressBar").css("width", "0%");
     $("#wordCounter").text("0 / 0");
@@ -139,6 +156,7 @@ export function initRSVPControls() {
 
     $(window).on("resize", fit);
     $(document).on("rsvp:refit", fit);
+    $(document).on("rsvp:modechange", updateMeta);
 
     $(document).on("keydown", function (e) {
         const tag = e.target.tagName;

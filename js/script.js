@@ -3,6 +3,8 @@ import { settingContainerHTML } from "../components/setting-container.js";
 import { initFontSwitcher } from "./font-style-selection.js";
 import { applyFontToElement } from "./font-storage.js";
 import { initRSVPControls } from "./rsvp.js";
+import { initInputMode } from "./input-mode.js";
+import { initTheme } from "./theme.js";
 
 $(document).ready(function () {
     $("#modalRoot").html(fontSelectorModalHTML);
@@ -23,6 +25,8 @@ $(document).ready(function () {
         if (e.key === "Escape") closeModal();
     });
 
+    initTheme();
     initFontSwitcher();
+    initInputMode();
     initRSVPControls();
 });
