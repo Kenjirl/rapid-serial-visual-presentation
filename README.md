@@ -11,6 +11,7 @@ One word at a time. Big, centered, and impossible to lose your place.
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-2B2D31?style=for-the-badge&logo=tailwindcss&logoColor=FFFAFA)
 ![jQuery](https://img.shields.io/badge/jQuery_3.7-18181B?style=for-the-badge&logo=jquery&logoColor=FFFAFA)
 ![ES Modules](https://img.shields.io/badge/ES_Modules-2B2D31?style=for-the-badge&logo=javascript&logoColor=FFFAFA)
+![Tesseract.js](https://img.shields.io/badge/Tesseract.js_OCR-18181B?style=for-the-badge)
 
 </div>
 
@@ -24,7 +25,7 @@ One word at a time. Big, centered, and impossible to lose your place.
 
 Fast Read is a small web app for **speed reading with RSVP** (Rapid Serial Visual Presentation). Instead of moving your eyes across a page, the words appear one by one in the same spot, so your eyes stay still and your brain does the reading.
 
-Paste any text, pick a speed, press **Start**. Not sure what to read? Hit **Use sample** to load a short story.
+Paste any text, pick a speed, press **Start**. Reading from a book? Tap **Scan** and take a photo of the page. Not sure what to read? Hit **Use sample** to load a short story.
 
 ## Highlights
 
@@ -41,6 +42,7 @@ Paste any text, pick a speed, press **Start**. Not sure what to read? Hit **Use 
 | 🌗 | **Light, dark or system** | Pick a theme in Settings, or follow your OS. Remembered between visits. |
 | 🔤 | **7 fonts** | Default, Lexend, Atkinson Hyperlegible, Inter, IBM Plex Sans, Roboto Mono and Quicksand. Your choice is remembered. |
 | 🧪 | **Sample texts** | One click loads a short Kancil story for plain text or novel mode. |
+| 📷 | **Scan from photos** | Take a picture of a book or page, or pick photos from your gallery. Text is read in your browser with Tesseract.js OCR (English and Indonesian). |
 | ⌨️ | **Keyboard friendly** | Full control without touching the mouse. |
 
 ## Novel mode
@@ -48,9 +50,10 @@ Paste any text, pick a speed, press **Start**. Not sure what to read? Hit **Use 
 Switch to **Novel (dialogue & narration)** above the text box. Text inside quotation marks is dialogue, everything else is narration.
 
 ```text
-On a sunny morning in Windy Meadows.
-"Nice weather today, isn't it?" I said.
-Father looked up at the sky, "Yes, it looks like it will be clear all day."
+On a scorching afternoon, Kancil arrived at the bank of a wide river.
+"Those cucumbers must be so sweet," he murmured.
+But in the water, a pack of crocodiles lurked with glowing eyes.
+"Hey, Kancil! Where do you think you're going?" asked the Crocodile.
 ```
 
 - **Narration** keeps the regular text color.
@@ -58,6 +61,22 @@ Father looked up at the sky, "Yes, it looks like it will be clear all day."
 - **Quote pauses:** every opening or closing quotation mark adds a short pause on top of normal punctuation, and one quote right after another (a change of speaker) pauses a little longer.
 - Straight (`"`) and curly (`“ ”`) quotes both work. An unclosed quote ends at the end of its line.
 - Chosen colors are kept while the page is open. In dark mode the 10 ready-made colors switch to lighter versions so they stay readable.
+
+## Scan from a photo
+
+Tap **Scan** above the text box to turn a printed page into text.
+
+1. Take a photo of a book, article or novel page, or pick one or more photos from your gallery.
+2. Fast Read reads the text with [Tesseract.js](https://github.com/naptha/tesseract.js), an OCR engine that runs in your browser through WebAssembly. Your photos are never uploaded anywhere.
+3. The result is added to the text box, so you can scan page after page. Review it, fix any mistakes, then press **Start**.
+
+Tips for better results:
+
+- Shoot straight above the page, in good light, with the text sharp and filling most of the frame.
+- Avoid curved pages, shadows and very small print.
+- In novel mode, check that quotation marks were recognized, since dialogue is detected from them.
+
+The OCR engine and language data are downloaded the first time you use Scan, so that first scan needs an internet connection and takes a little longer.
 
 ## Screenshots
 
@@ -91,6 +110,7 @@ Shortcuts are paused while you type in the text box.
 3. After each word, the font size is fitted to the stage width.
 4. The progress slider jumps to any word. Dragging it while paused shows that word and resumes from there.
 5. Font and theme are saved in `localStorage`. Dark mode swaps the color tokens through CSS variables, so the same classes work in both themes.
+6. Scan: the photo is downscaled, converted to grayscale with extra contrast, and read by Tesseract.js (English + Indonesian). Words broken by a hyphen at the end of a line are joined and the lines of each paragraph are merged. In novel mode every paragraph becomes one line, which the dialogue parser needs.
 
 
 <div align="center">
