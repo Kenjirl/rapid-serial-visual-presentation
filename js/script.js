@@ -5,6 +5,7 @@ import { applyFontToElement } from "./font-storage.js";
 import { initRSVPControls } from "./rsvp.js";
 import { initInputMode } from "./input-mode.js";
 import { initTheme } from "./theme.js";
+import { initScan } from "./scan.js";
 
 $(document).ready(function () {
     $("#modalRoot").html(fontSelectorModalHTML);
@@ -29,4 +30,5 @@ $(document).ready(function () {
     initFontSwitcher();
     initInputMode();
     initRSVPControls();
+    initScan();
 });

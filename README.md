@@ -55,7 +55,7 @@ Father looked up at the sky, "Yes, it looks like it will be clear all day."
 
 - **Narration** keeps the regular text color.
 - **Dialogue** is colored. Every dialogue is listed in a small table under the text box, where you click its color chip to pick one of 10 ready-made colors or a custom one. Give each character their own color.
-- **Transitions** between narration and dialogue get a short extra pause, similar to a comma or full stop.
+- **Quote pauses:** every opening or closing quotation mark adds a short pause on top of normal punctuation, and one quote right after another (a change of speaker) pauses a little longer.
 - Straight (`"`) and curly (`“ ”`) quotes both work. An unclosed quote ends at the end of its line.
 - Chosen colors are kept while the page is open. In dark mode the 10 ready-made colors switch to lighter versions so they stay readable.
 

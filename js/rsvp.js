@@ -22,7 +22,8 @@ function splitLong(word) {
     }).filter((p) => p !== "-");
 }
 
-const TRANSITION_PAUSE = 0.6; // jeda ekstra (x delay dasar) saat pindah narasi <-> dialog
+// Jeda ekstra (x delay dasar) di setiap tanda petik, ditambahkan di atas jeda tanda baca
+const QUOTE_PAUSE = { quote: 0.5, speaker: 1 }; // narasi <-> dialog | dialog langsung disusul dialog lain
 
 // -> [{ text, color, pause }]; narasi: color null
 function tokenize(text) {
@@ -32,7 +33,7 @@ function tokenize(text) {
         return toks.map((t, i) => ({
             text: t,
             color: s.color || null,
-            pause: s.pauseAfter && i === toks.length - 1 ? TRANSITION_PAUSE : 0,
+            pause: i === toks.length - 1 ? QUOTE_PAUSE[s.boundary] || 0 : 0,
         }));
     });
 }
@@ -43,7 +44,7 @@ function delayFor(token) {
     let extra = 0;
     if (/[.!?]["')]*$/.test(word)) extra = 1;
     else if (/[,;:]["')]*$/.test(word)) extra = 0.5;
-    extra = Math.max(extra, token.pause || 0); // transisi petik tidak menumpuk dengan tanda baca
+    extra += token.pause || 0; // jeda petik menambah jeda tanda baca
     const mult = 1 + extra + (word.length > 8 ? 0.3 : 0);
     return (60000 / getWPM()) * mult;
 }
@@ -188,7 +189,7 @@ export function initRSVPControls() {
     $(window).on("resize", fit);
     $(document).on("rsvp:refit", fit);
     $(document).on("rsvp:modechange", updateMeta);
-    $(document).on("rsvp:sample", stop); // teks diganti contoh: hentikan bacaan lama
+    $(document).on("rsvp:sample rsvp:textreplaced", stop); // teks diganti contoh: hentikan bacaan lama
 
     $(document).on("keydown", function (e) {
         const tag = e.target.tagName;

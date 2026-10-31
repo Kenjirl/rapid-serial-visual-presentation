@@ -1,6 +1,6 @@
 // js/input-mode.js
 // Toggle "Plain text" / "Novel" + tabel pewarnaan dialog.
-import { PALETTE, parseNovel, setDialogueColor, themed } from "./novel-parser.js";
+import { PALETTE, parseNovel, setDialogueColor, resetDialogueColors, themed } from "./novel-parser.js";
 import { SAMPLES } from "./samples.js";
 
 const KEY = "rsvp_input_mode";
@@ -149,6 +149,18 @@ export function initInputMode() {
         renderDialogues();
         $(document).trigger("rsvp:sample");
     });
+
+    // Tombol Clear: tampil hanya saat textarea berisi teks
+    const syncClear = () => $("#clearBtn").toggleClass("hidden", !$("#textInput").val());
+    $("#textInput").on("input", syncClear);
+    $("#clearBtn").on("click", () => {
+        resetDialogueColors(); // warna dialog lama tidak boleh terbawa ke teks berikutnya
+        $("#textInput").val("").trigger("input").trigger("focus");
+        $("#scanStatus").addClass("hidden").text("");
+        renderDialogues();
+        $(document).trigger("rsvp:textreplaced"); // hentikan bacaan & reset counter
+    });
+    syncClear();
 
     let t;
     $("#textInput").on("input", () => {

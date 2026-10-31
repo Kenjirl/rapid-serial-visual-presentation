@@ -10,9 +10,10 @@ export const PALETTE = [
 // Warna pilihan user per dialog (urutan dialog ke-n), disimpan di memori saja
 const colors = new Map();
 export const setDialogueColor = (index, color) => colors.set(index, color);
+export const resetDialogueColors = () => colors.clear(); // dipakai saat teks dihapus
 
 // Mendukung " " lurus maupun “ ” melengkung. Petik yang tidak ditutup berakhir di akhir baris.
-// -> { segments: [{ text, dialogue, color, pauseAfter, index? }], dialogues: [...] }
+// -> { segments: [{ text, dialogue, color, boundary, index? }], dialogues: [...] }
 export function parseNovel(text) {
     const raw = [];
 
@@ -40,8 +41,8 @@ export function parseNovel(text) {
             text: s.text,
             dialogue: s.dialogue,
             color: null,
-            // jeda ekstra di akhir segmen kalau berikutnya pindah narasi <-> dialog
-            pauseAfter: !!next && next.dialogue !== s.dialogue,
+            // jenis batas di akhir segmen: "quote" = pindah narasi <-> dialog, "speaker" = dialog langsung disusul dialog lain
+            boundary: !next ? null : next.dialogue !== s.dialogue ? "quote" : s.dialogue ? "speaker" : null,
         };
         if (s.dialogue) {
             seg.index = n++;
