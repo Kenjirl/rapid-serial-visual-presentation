@@ -35,3 +35,43 @@ input[type="color"] {
 input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 9999px; }
 input[type="color"]::-moz-color-swatch { border: 0; border-radius: 9999px; }
+
+/* Scrubber kata: slider tipis bergaya progress bar (mengikuti token tema, termasuk dark mode) */
+.scrubber {
+    --fill: var(--color-cl-18181B, #18181b);
+    --track: var(--color-cl-EDEAEA, #edeaea);
+    --ring: var(--color-cl-FFFAFA, #fffafa);
+    --p: 0%;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 1.25rem;
+    background: transparent;
+    cursor: pointer;
+}
+.scrubber:disabled { opacity: 0.5; cursor: default; }
+.scrubber::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(to right, var(--fill) var(--p), var(--track) var(--p));
+}
+.scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -5px;
+    border-radius: 9999px;
+    background: var(--fill);
+    border: 2px solid var(--ring);
+    box-shadow: 0 0 0 1px var(--fill);
+}
+.scrubber::-moz-range-track { height: 4px; border-radius: 9999px; background: var(--track); }
+.scrubber::-moz-range-progress { height: 4px; border-radius: 9999px; background: var(--fill); }
+.scrubber::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--fill);
+    border: 2px solid var(--ring);
+    box-shadow: 0 0 0 1px var(--fill);
+}

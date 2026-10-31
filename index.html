@@ -38,6 +38,9 @@
         <script src="https://kit.fontawesome.com/5b8fa639bb.js" crossorigin="anonymous"></script>
     </head>
     <body class="min-h-screen flex flex-col items-center text-cl-18181B">
+        <!-- Spacer for header -->
+        <div class="block w-full h-20"></div>
+        
         <main class="w-full flex-1 flex flex-col items-center gap-8 px-4 pt-10 pb-10">
             <!-- RSVP stage: one column, 80% of screen width -->
             <section
@@ -51,11 +54,9 @@
                 </p>
             </section>
 
-            <!-- Progress -->
-            <div class="w-full max-w-2xl flex flex-col gap-2">
-                <div class="h-1 w-full rounded-full bg-cl-EDEAEA overflow-hidden">
-                    <div id="progressBar" class="h-full w-0 bg-cl-18181B transition-[width] duration-150"></div>
-                </div>
+            <!-- Progress / scrubber -->
+            <div class="w-full max-w-2xl flex flex-col gap-1">
+                <input id="scrubber" type="range" min="1" max="1" value="1" step="1" disabled aria-label="Seek to word" class="scrubber" />
                 <div class="flex justify-between text-sm text-cl-8A8A8E">
                     <span id="wordCounter">0 / 0</span>
                     <span id="textMeta">0 words</span>
@@ -86,11 +87,16 @@
 
             <!-- Text input -->
             <section class="w-full max-w-2xl flex flex-col items-center gap-3">
-                <div id="modeToggle" class="inline-flex p-1 rounded-full bg-cl-EDEAEA text-sm">
-                    <button data-mode="plain" aria-pressed="true" class="px-4 py-1.5 rounded-full transition-colors">Plain text</button>
-                    <button data-mode="novel" aria-pressed="false" class="px-4 py-1.5 rounded-full transition-colors">Novel (dialogue &amp; narration)</button>
+                <div class="w-full flex flex-wrap items-center justify-between gap-2">
+                    <div id="modeToggle" class="inline-flex p-1 rounded-full bg-cl-EDEAEA text-sm">
+                        <button data-mode="plain" aria-pressed="true" class="px-4 py-1.5 rounded-full transition-colors">Plain text</button>
+                        <button data-mode="novel" aria-pressed="false" class="px-4 py-1.5 rounded-full transition-colors">Novel (dialogue &amp; narration)</button>
+                    </div>
+                    <button id="sampleBtn" type="button" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-full border border-cl-D9D5D5 text-cl-2B2D31 hover:bg-cl-EDEAEA transition-colors">
+                        <i class="fa-solid fa-paste"></i> Use sample
+                    </button>
                 </div>
-                <p id="novelHint" class="hidden max-w-md mx-auto text-center text-xs text-cl-8A8A8E">
+                <p id="novelHint" class="hidden w-full text-left text-xs text-cl-8A8A8E">
                     Text inside quotation marks (" ") is dialogue and can be colored. Everything else is narration and stays black.
                 </p>
                 <textarea
@@ -117,7 +123,9 @@
                 <img src="public/icon/android-chrome-192x192.png" alt="RSVP logo" class="justify-self-start h-8 w-8 rounded-lg" />
                 <span class="hidden md:block text-center text-xs sm:text-sm font-medium text-cl-18181B">Rapid Serial Visual Presentation</span>
                 <nav class="justify-self-end flex items-center gap-4 text-lg text-cl-2B2D31">
-                    <a href="#" aria-label="Profile" class="hover:text-cl-8A8A8E transition-colors"><i class="fa-solid fa-user"></i></a>
+                    <a href="https://kenjirl.github.io" target="_blank" rel="noopener" aria-label="Kenji's Lore to Web Dev" class="hover:text-cl-8A8A8E transition-colors">
+                        <img src="public/icon/kenjirl-favicon-32x32.png" alt="Kenji's Lore to Web Dev logo" class="justify-self-start h-5 w-5 rounded-full" />
+                    </a>
                     <a href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub" class="hover:text-cl-8A8A8E transition-colors"><i class="fa-brands fa-github"></i></a>
                 </nav>
             </div>

@@ -60,11 +60,27 @@ function fit() {
     }
 }
 
+// Geser scrubber ke kata ke-`value` dari `max` (min = 1)
+function syncScrubber(value, max) {
+    const el = $("#scrubber")[0];
+    const n = Math.max(max, 1);
+    el.max = n;
+    el.value = value;
+    el.disabled = max === 0;
+    el.style.setProperty("--p", n > 1 ? `${((value - 1) / (n - 1)) * 100}%` : "0%");
+    el.setAttribute("aria-valuetext", max ? `Word ${value} of ${max}` : "No text");
+}
+
 function updateMeta() {
     const count = tokenize($("#textInput").val()).length;
     const secs = Math.round((count * 60) / getWPM());
     const t = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
     $("#textMeta").text(`${count} words · about ${t}`);
+
+    if (state === "idle") {
+        $("#wordCounter").text(`0 / ${count}`);
+        syncScrubber(1, count);
+    }
 }
 
 function updateUI() {
@@ -77,7 +93,7 @@ function show(i) {
     const w = words[i];
     $("#rsvpWord").text(w.text).css("color", themed(w.color)).removeClass("text-cl-8A8A8E").addClass("text-cl-18181B");
     fit();
-    $("#progressBar").css("width", `${((i + 1) / words.length) * 100}%`);
+    syncScrubber(i + 1, words.length);
     $("#wordCounter").text(`${i + 1} / ${words.length}`);
 }
 
@@ -123,9 +139,8 @@ function stop() {
     index = 0;
     $("#rsvpWord").text("Ready").css("color", "").removeClass("text-cl-18181B").addClass("text-cl-8A8A8E");
     fit();
-    $("#progressBar").css("width", "0%");
-    $("#wordCounter").text("0 / 0");
     updateUI();
+    updateMeta(); // counter & scrubber kembali ke posisi awal
 }
 
 function restart() {
@@ -133,14 +148,27 @@ function restart() {
     play();
 }
 
-function seek(delta) {
-    if (!words.length || state === "idle") return;
-    const cur = Math.max(0, Math.min(words.length - 1, index - 1 + delta));
+// Lompat ke kata ke-i (0-based). Dari kondisi idle, teks dimuat dulu lalu berhenti (paused) di kata itu.
+function seekTo(i) {
+    if (state === "idle") {
+        words = tokenize($("#textInput").val());
+        if (!words.length) return;
+    }
+    const cur = Math.max(0, Math.min(words.length - 1, i));
     clearTimeout(timer);
     index = cur + 1;
     show(cur);
-    if (state === "done") { state = "paused"; updateUI(); }
-    if (state === "playing") timer = setTimeout(index >= words.length ? finish : step, delayFor(words[cur]));
+    if (state === "playing") {
+        timer = setTimeout(index >= words.length ? finish : step, delayFor(words[cur]));
+    } else {
+        state = cur >= words.length - 1 ? "done" : "paused";
+        updateUI();
+    }
+}
+
+function seek(delta) {
+    if (state === "idle") return;
+    seekTo(index - 1 + delta);
 }
 
 export function initRSVPControls() {
@@ -153,10 +181,14 @@ export function initRSVPControls() {
         updateMeta();
     });
     $("#textInput").on("input", updateMeta);
+    $("#scrubber").on("input", function () {
+        seekTo(parseInt(this.value, 10) - 1);
+    });
 
     $(window).on("resize", fit);
     $(document).on("rsvp:refit", fit);
     $(document).on("rsvp:modechange", updateMeta);
+    $(document).on("rsvp:sample", stop); // teks diganti contoh: hentikan bacaan lama
 
     $(document).on("keydown", function (e) {
         const tag = e.target.tagName;

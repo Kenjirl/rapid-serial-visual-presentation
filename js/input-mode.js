@@ -1,6 +1,7 @@
 // js/input-mode.js
 // Toggle "Plain text" / "Novel" + tabel pewarnaan dialog.
 import { PALETTE, parseNovel, setDialogueColor, themed } from "./novel-parser.js";
+import { SAMPLES } from "./samples.js";
 
 const KEY = "rsvp_input_mode";
 const ON = "bg-cl-18181B text-cl-FFFAFA";
@@ -9,7 +10,7 @@ const RING = "ring-2 ring-offset-1 ring-cl-18181B";
 
 const PLACEHOLDER = {
     plain: "Paste or type the text you want to read...",
-    novel: 'Di suatu pagi hari yang cerah, di perumahan Angin Sejuk.\n"Hari ini cerah, ya?" Kataku.\nAyah memandang ke arah langit, "Iya, sepertinya hari ini akan cerah."',
+    novel: 'Paste or type the text you want to read...\nPut spoken lines inside quotation marks to see the dialogue color table.\nOr use the provided sample.',
 };
 
 export const getMode = () => (localStorage.getItem(KEY) === "novel" ? "novel" : "plain");
@@ -133,6 +134,20 @@ function setMode(mode) {
 export function initInputMode() {
     $("#modeToggle button").on("click", function () {
         setMode($(this).data("mode"));
+    });
+
+    // Isi textarea dengan contoh sesuai mode yang sedang dipilih
+    $("#sampleBtn").on("click", () => {
+        const mode = getMode();
+        const sample = SAMPLES[mode];
+        const $ta = $("#textInput");
+        const current = $ta.val().trim();
+        if (current && current !== sample.text.trim() && !window.confirm("Replace the current text with the sample?")) return;
+
+        if (mode === "novel") sample.colors.forEach((p, i) => setDialogueColor(i, PALETTE[p]));
+        $ta.val(sample.text).trigger("input");
+        renderDialogues();
+        $(document).trigger("rsvp:sample");
     });
 
     let t;
